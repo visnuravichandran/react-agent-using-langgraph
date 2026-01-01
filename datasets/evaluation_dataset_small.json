@@ -1,0 +1,156 @@
+{
+  "test_cases": [
+    {
+      "id": "kb_001",
+      "category": "knowledge_base_only",
+      "query": "What are the strategic shifts happening in the footwear and apparel industry?",
+      "expected_output": "Strategic shifts in the footwear and apparel industry include digital transformation, direct-to-consumer models, sustainability initiatives, and supply chain optimization.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Industry analysis question that should be answered from internal knowledge base."
+    },
+    {
+      "id": "kb_002",
+      "category": "knowledge_base_only",
+      "query": "Tell me about company policies regarding remote work.",
+      "expected_output": "Company policies on remote work include flexible work arrangements, guidelines for remote collaboration, and requirements for maintaining productivity.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Company policy question requiring internal knowledge base."
+    },
+    {
+      "id": "kb_003",
+      "category": "knowledge_base_only",
+      "query": "What are the key findings from our Q3 2024 market research report?",
+      "expected_output": "Key findings from Q3 2024 market research include market trends, competitive analysis, and strategic recommendations.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Specific historical document retrieval."
+    },
+    {
+      "id": "web_001",
+      "category": "web_search_only",
+      "query": "What are the latest AI regulation developments announced today?",
+      "expected_output": "Recent AI regulations include new policies from various governments regarding AI safety, ethics, and deployment guidelines.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Explicitly asks for 'today' information requiring real-time web search."
+    },
+    {
+      "id": "web_002",
+      "category": "web_search_only",
+      "query": "What are the current stock market trends for tech companies?",
+      "expected_output": "Current stock market trends show various movements in tech sector including major companies' performance.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Current market information requires real-time web search."
+    },
+    {
+      "id": "web_003",
+      "category": "web_search_only",
+      "query": "What breaking news happened in the AI industry this morning?",
+      "expected_output": "Recent breaking news in AI includes new product launches, research breakthroughs, and industry announcements.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Breaking news explicitly requires web search."
+    },
+    {
+      "id": "combined_001",
+      "category": "combined_tools",
+      "query": "How does our company's AI strategy compare to current industry trends?",
+      "expected_output": "Our company's AI strategy focuses on specific areas compared to industry trends showing different approaches and priorities.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "medium",
+      "reasoning": "Requires both internal strategy (KB) and external trends (web)."
+    },
+    {
+      "id": "combined_002",
+      "category": "combined_tools",
+      "query": "Compare our product offerings to what competitors are launching today.",
+      "expected_output": "Our products include specific features while competitors are launching new products with different capabilities.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "hard",
+      "reasoning": "Requires internal product info and current competitor information."
+    },
+    {
+      "id": "combined_003",
+      "category": "combined_tools",
+      "query": "What are the latest sustainability trends and how do they align with our environmental policies?",
+      "expected_output": "Latest sustainability trends include various environmental initiatives compared to our company's environmental policies and commitments.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "medium",
+      "reasoning": "Requires both external trends and internal policies."
+    },
+    {
+      "id": "conv_001",
+      "category": "conversational",
+      "query": "Hello! How are you?",
+      "expected_output": "Hello! I'm doing well. How can I help you today?",
+      "expected_tools": [],
+      "expected_tool_order": [],
+      "expected_num_steps": 1,
+      "difficulty": "easy",
+      "reasoning": "Simple greeting requiring no tools."
+    }
+  ]
+}

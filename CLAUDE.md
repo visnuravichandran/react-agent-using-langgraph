@@ -47,6 +47,36 @@ pytest
 pytest -v tests/ --asyncio-mode=auto
 ```
 
+### Evaluation
+```bash
+# Run evaluation on small dataset (10 test cases, ~2-3 minutes)
+python scripts/run_evaluation.py --dataset small
+
+# Run full evaluation with Langfuse reporting (46 test cases, ~8-12 minutes)
+python scripts/run_evaluation.py --dataset main --langfuse
+
+# Upload dataset to Langfuse
+python scripts/run_evaluation.py --dataset main --langfuse --upload-dataset
+
+# Custom dataset or output directory
+python scripts/run_evaluation.py --dataset /path/to/dataset.json --output ./results
+
+# Check evaluation configuration
+python scripts/run_evaluation.py --check-config
+
+# Run evaluation tests
+pytest tests/test_evaluations.py -v
+```
+
+**Evaluation Metrics:**
+- **Task Completion**: Did the agent complete the task?
+- **Tool Correctness**: Were the right tools selected?
+- **Step Efficiency**: Was execution optimal?
+- **Plan Adherence**: Did agent follow the strategy?
+- **Plan Quality**: Was reasoning clear?
+
+See [evaluations/README.md](evaluations/README.md) for comprehensive documentation.
+
 ## Architecture
 
 ### Core Components

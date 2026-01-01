@@ -330,3 +330,59 @@ export LANGCHAIN_PROJECT=react-agent-dual-tools
 ```
 
 View traces at [smith.langchain.com](https://smith.langchain.com)
+
+## Evaluation
+
+This project includes a comprehensive evaluation system using DeepEval 3.7.7 to measure agent performance across 5 key metrics.
+
+### Quick Start
+
+```bash
+# Install evaluation dependencies (included in requirements.txt)
+pip install deepeval==3.7.7
+
+# Run evaluation on small dataset (10 test cases, ~2-3 minutes)
+python scripts/run_evaluation.py --dataset small
+
+# Run full evaluation with Langfuse reporting (46 test cases, ~8-12 minutes)
+python scripts/run_evaluation.py --dataset main --langfuse
+```
+
+### Metrics
+
+The evaluation system measures:
+
+1. **Task Completion** (threshold: 0.7) - Did the agent complete the user's task?
+2. **Tool Correctness** (threshold: 0.8) - Were the correct tools selected?
+3. **Step Efficiency** (threshold: 0.6) - Was the execution path optimal?
+4. **Plan Adherence** (threshold: 0.7) - Did the agent follow the documented strategy?
+5. **Plan Quality** (threshold: 0.6) - Was the reasoning clear and logical?
+
+### Test Datasets
+
+- **Small Dataset**: 10 representative test cases for quick iteration
+- **Main Dataset**: 46 test cases across 5 categories (KB queries, web search, combined, conversational, edge cases)
+
+### Results
+
+Evaluation results are saved to `results/` directory as JSON and CSV files. If Langfuse is enabled, results are also sent to Langfuse for centralized tracking and visualization.
+
+### CLI Options
+
+```bash
+# Custom dataset
+python scripts/run_evaluation.py --dataset /path/to/dataset.json
+
+# Specify output directory
+python scripts/run_evaluation.py --dataset small --output ./my_results
+
+# Upload dataset to Langfuse first
+python scripts/run_evaluation.py --dataset main --langfuse --upload-dataset
+
+# Check configuration
+python scripts/run_evaluation.py --check-config
+```
+
+### Documentation
+
+For comprehensive documentation on the evaluation system, see [evaluations/README.md](./evaluations/README.md)

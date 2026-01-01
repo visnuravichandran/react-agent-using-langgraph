@@ -1,0 +1,692 @@
+{
+  "test_cases": [
+    {
+      "id": "kb_001",
+      "category": "knowledge_base_only",
+      "query": "What are the strategic shifts happening in the footwear and apparel industry?",
+      "expected_output": "Strategic shifts in the footwear and apparel industry include digital transformation, direct-to-consumer models, sustainability initiatives, and supply chain optimization.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Industry analysis question that should be answered from internal knowledge base."
+    },
+    {
+      "id": "kb_002",
+      "category": "knowledge_base_only",
+      "query": "Tell me about company policies regarding remote work.",
+      "expected_output": "Company policies on remote work include flexible work arrangements, guidelines for remote collaboration, and requirements for maintaining productivity.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Company policy question requiring internal knowledge base."
+    },
+    {
+      "id": "kb_003",
+      "category": "knowledge_base_only",
+      "query": "What are the key findings from our Q3 2024 market research report?",
+      "expected_output": "Key findings from Q3 2024 market research include market trends, competitive analysis, and strategic recommendations.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Specific historical document retrieval."
+    },
+    {
+      "id": "web_001",
+      "category": "web_search_only",
+      "query": "What are the latest AI regulation developments announced today?",
+      "expected_output": "Recent AI regulations include new policies from various governments regarding AI safety, ethics, and deployment guidelines.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Explicitly asks for 'today' information requiring real-time web search."
+    },
+    {
+      "id": "web_002",
+      "category": "web_search_only",
+      "query": "What are the current stock market trends for tech companies?",
+      "expected_output": "Current stock market trends show various movements in tech sector including major companies' performance.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Current market information requires real-time web search."
+    },
+    {
+      "id": "web_003",
+      "category": "web_search_only",
+      "query": "What breaking news happened in the AI industry this morning?",
+      "expected_output": "Recent breaking news in AI includes new product launches, research breakthroughs, and industry announcements.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Breaking news explicitly requires web search."
+    },
+    {
+      "id": "combined_001",
+      "category": "combined_tools",
+      "query": "How does our company's AI strategy compare to current industry trends?",
+      "expected_output": "Our company's AI strategy focuses on specific areas compared to industry trends showing different approaches and priorities.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "medium",
+      "reasoning": "Requires both internal strategy (KB) and external trends (web)."
+    },
+    {
+      "id": "combined_002",
+      "category": "combined_tools",
+      "query": "Compare our product offerings to what competitors are launching today.",
+      "expected_output": "Our products include specific features while competitors are launching new products with different capabilities.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "hard",
+      "reasoning": "Requires internal product info and current competitor information."
+    },
+    {
+      "id": "combined_003",
+      "category": "combined_tools",
+      "query": "What are the latest sustainability trends and how do they align with our environmental policies?",
+      "expected_output": "Latest sustainability trends include various environmental initiatives compared to our company's environmental policies and commitments.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "medium",
+      "reasoning": "Requires both external trends and internal policies."
+    },
+    {
+      "id": "conv_001",
+      "category": "conversational",
+      "query": "Hello! How are you?",
+      "expected_output": "Hello! I'm doing well. How can I help you today?",
+      "expected_tools": [],
+      "expected_tool_order": [],
+      "expected_num_steps": 1,
+      "difficulty": "easy",
+      "reasoning": "Simple greeting requiring no tools."
+    },
+    {
+      "id": "conv_002",
+      "category": "conversational",
+      "query": "Thank you, that was very helpful!",
+      "expected_output": "You're welcome! I'm glad I could help.",
+      "expected_tools": [],
+      "expected_tool_order": [],
+      "expected_num_steps": 1,
+      "difficulty": "easy",
+      "reasoning": "Conversational response requiring no tools."
+    },
+    {
+      "id": "kb_004",
+      "category": "knowledge_base_only",
+      "query": "What are the key performance indicators for Q2 2024?",
+      "expected_output": "Information from internal knowledge base relevant to the query.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Knowledge base query for internal information."
+    },
+    {
+      "id": "kb_005",
+      "category": "knowledge_base_only",
+      "query": "Explain our data privacy and security policies.",
+      "expected_output": "Information from internal knowledge base relevant to the query.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Knowledge base query for internal information."
+    },
+    {
+      "id": "kb_006",
+      "category": "knowledge_base_only",
+      "query": "What were the main outcomes of the annual strategy meeting?",
+      "expected_output": "Information from internal knowledge base relevant to the query.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Knowledge base query for internal information."
+    },
+    {
+      "id": "kb_007",
+      "category": "knowledge_base_only",
+      "query": "Describe our customer acquisition strategy.",
+      "expected_output": "Information from internal knowledge base relevant to the query.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Knowledge base query for internal information."
+    },
+    {
+      "id": "kb_008",
+      "category": "knowledge_base_only",
+      "query": "What are the core values of our organization?",
+      "expected_output": "Information from internal knowledge base relevant to the query.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Knowledge base query for internal information."
+    },
+    {
+      "id": "kb_009",
+      "category": "knowledge_base_only",
+      "query": "Tell me about our product development process.",
+      "expected_output": "Information from internal knowledge base relevant to the query.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Knowledge base query for internal information."
+    },
+    {
+      "id": "kb_010",
+      "category": "knowledge_base_only",
+      "query": "What are the training requirements for new employees?",
+      "expected_output": "Information from internal knowledge base relevant to the query.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Knowledge base query for internal information."
+    },
+    {
+      "id": "kb_011",
+      "category": "knowledge_base_only",
+      "query": "Summarize our financial performance in the last fiscal year.",
+      "expected_output": "Information from internal knowledge base relevant to the query.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "hard",
+      "reasoning": "Knowledge base query for internal information."
+    },
+    {
+      "id": "kb_012",
+      "category": "knowledge_base_only",
+      "query": "What are our competitive advantages in the market?",
+      "expected_output": "Information from internal knowledge base relevant to the query.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Knowledge base query for internal information."
+    },
+    {
+      "id": "kb_013",
+      "category": "knowledge_base_only",
+      "query": "Describe our supply chain management approach.",
+      "expected_output": "Information from internal knowledge base relevant to the query.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "hard",
+      "reasoning": "Knowledge base query for internal information."
+    },
+    {
+      "id": "kb_014",
+      "category": "knowledge_base_only",
+      "query": "What are our diversity and inclusion initiatives?",
+      "expected_output": "Information from internal knowledge base relevant to the query.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Knowledge base query for internal information."
+    },
+    {
+      "id": "kb_015",
+      "category": "knowledge_base_only",
+      "query": "Explain our customer support escalation process.",
+      "expected_output": "Information from internal knowledge base relevant to the query.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Knowledge base query for internal information."
+    },
+    {
+      "id": "web_004",
+      "category": "web_search_only",
+      "query": "What are the latest developments in quantum computing?",
+      "expected_output": "Current information from web search relevant to the query.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Web search query for real-time information."
+    },
+    {
+      "id": "web_005",
+      "category": "web_search_only",
+      "query": "What are today's cryptocurrency market trends?",
+      "expected_output": "Current information from web search relevant to the query.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Web search query for real-time information."
+    },
+    {
+      "id": "web_006",
+      "category": "web_search_only",
+      "query": "What's the current weather forecast for major cities?",
+      "expected_output": "Current information from web search relevant to the query.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Web search query for real-time information."
+    },
+    {
+      "id": "web_007",
+      "category": "web_search_only",
+      "query": "What are the breaking news stories in technology today?",
+      "expected_output": "Current information from web search relevant to the query.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Web search query for real-time information."
+    },
+    {
+      "id": "web_008",
+      "category": "web_search_only",
+      "query": "What are the latest scientific discoveries announced this week?",
+      "expected_output": "Current information from web search relevant to the query.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Web search query for real-time information."
+    },
+    {
+      "id": "web_009",
+      "category": "web_search_only",
+      "query": "What are current global economic indicators showing?",
+      "expected_output": "Current information from web search relevant to the query.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Web search query for real-time information."
+    },
+    {
+      "id": "web_010",
+      "category": "web_search_only",
+      "query": "What are the most recent cybersecurity threats reported?",
+      "expected_output": "Current information from web search relevant to the query.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "hard",
+      "reasoning": "Web search query for real-time information."
+    },
+    {
+      "id": "combined_004",
+      "category": "combined_tools",
+      "query": "How do our sustainability initiatives compare to industry best practices?",
+      "expected_output": "Combined information from internal knowledge and external web search.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "medium",
+      "reasoning": "Comparison query requiring both internal and external information."
+    },
+    {
+      "id": "combined_005",
+      "category": "combined_tools",
+      "query": "Compare our pricing strategy to current market trends.",
+      "expected_output": "Combined information from internal knowledge and external web search.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "hard",
+      "reasoning": "Comparison query requiring both internal and external information."
+    },
+    {
+      "id": "combined_006",
+      "category": "combined_tools",
+      "query": "How does our R&D investment align with industry standards?",
+      "expected_output": "Combined information from internal knowledge and external web search.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "medium",
+      "reasoning": "Comparison query requiring both internal and external information."
+    },
+    {
+      "id": "combined_007",
+      "category": "combined_tools",
+      "query": "Evaluate our digital transformation progress against industry benchmarks.",
+      "expected_output": "Combined information from internal knowledge and external web search.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "hard",
+      "reasoning": "Comparison query requiring both internal and external information."
+    },
+    {
+      "id": "combined_008",
+      "category": "combined_tools",
+      "query": "How do our employee benefits compare to current market offerings?",
+      "expected_output": "Combined information from internal knowledge and external web search.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "medium",
+      "reasoning": "Comparison query requiring both internal and external information."
+    },
+    {
+      "id": "combined_009",
+      "category": "combined_tools",
+      "query": "Compare our innovation strategy to emerging industry trends.",
+      "expected_output": "Combined information from internal knowledge and external web search.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "hard",
+      "reasoning": "Comparison query requiring both internal and external information."
+    },
+    {
+      "id": "combined_010",
+      "category": "combined_tools",
+      "query": "How does our cybersecurity posture compare to recent threat landscape?",
+      "expected_output": "Combined information from internal knowledge and external web search.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "hard",
+      "reasoning": "Comparison query requiring both internal and external information."
+    },
+    {
+      "id": "combined_011",
+      "category": "combined_tools",
+      "query": "Analyze our market position relative to current competitive dynamics.",
+      "expected_output": "Combined information from internal knowledge and external web search.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "hard",
+      "reasoning": "Comparison query requiring both internal and external information."
+    },
+    {
+      "id": "combined_012",
+      "category": "combined_tools",
+      "query": "How do our customer satisfaction scores compare to industry averages?",
+      "expected_output": "Combined information from internal knowledge and external web search.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "medium",
+      "reasoning": "Comparison query requiring both internal and external information."
+    },
+    {
+      "id": "conv_003",
+      "category": "conversational",
+      "query": "What can you help me with?",
+      "expected_output": "Conversational response without tool usage.",
+      "expected_tools": [],
+      "expected_tool_order": [],
+      "expected_num_steps": 1,
+      "difficulty": "easy",
+      "reasoning": "Conversational interaction requiring no tools."
+    },
+    {
+      "id": "conv_004",
+      "category": "conversational",
+      "query": "Thanks!",
+      "expected_output": "Conversational response without tool usage.",
+      "expected_tools": [],
+      "expected_tool_order": [],
+      "expected_num_steps": 1,
+      "difficulty": "easy",
+      "reasoning": "Conversational interaction requiring no tools."
+    },
+    {
+      "id": "conv_005",
+      "category": "conversational",
+      "query": "I appreciate your help.",
+      "expected_output": "Conversational response without tool usage.",
+      "expected_tools": [],
+      "expected_tool_order": [],
+      "expected_num_steps": 1,
+      "difficulty": "easy",
+      "reasoning": "Conversational interaction requiring no tools."
+    },
+    {
+      "id": "edge_001",
+      "category": "edge_case",
+      "query": "What are your capabilities and can you also tell me about today's news?",
+      "expected_output": "Information about capabilities and current news.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "medium",
+      "reasoning": "Multi-intent query that should prioritize the informational request."
+    },
+    {
+      "id": "edge_002",
+      "category": "edge_case",
+      "query": "",
+      "expected_output": "Could you please provide a question or request?",
+      "expected_tools": [],
+      "expected_tool_order": [],
+      "expected_num_steps": 1,
+      "difficulty": "easy",
+      "reasoning": "Empty query edge case."
+    },
+    {
+      "id": "edge_003",
+      "category": "edge_case",
+      "query": "asdfghjkl qwerty",
+      "expected_output": "I'm not sure I understand. Could you please rephrase your question?",
+      "expected_tools": [],
+      "expected_tool_order": [],
+      "expected_num_steps": 1,
+      "difficulty": "easy",
+      "reasoning": "Nonsensical query edge case."
+    },
+    {
+      "id": "edge_004",
+      "category": "edge_case",
+      "query": "Tell me about our AI strategy and the latest AI news and how they compare.",
+      "expected_output": "Information about internal AI strategy compared to latest AI news.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "hard",
+      "reasoning": "Complex multi-part query requiring careful handling."
+    }
+  ]
+}

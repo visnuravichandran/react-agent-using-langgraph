@@ -38,7 +38,7 @@ env/
 *~
 
 # Claude Code
-.claude/
+.claude/settings.local.json
 
 # OS
 .DS_Store
@@ -51,3 +51,7 @@ htmlcov/
 
 # Logs
 *.log
+
+# Evaluation Results
+results/
+*.deepeval.json
