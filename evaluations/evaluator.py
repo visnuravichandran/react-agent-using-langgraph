@@ -1,7 +1,7 @@
 """
 Main Evaluation Runner
 
-Orchestrates the evaluation of the LangGraph ReAct agent using DeepEval metrics.
+Orchestrates the evaluation of the LangGraph ReAct agent using DeepEval's official metrics.
 """
 
 import json
@@ -12,7 +12,8 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 
-from deepeval.test_case import LLMTestCase
+from deepeval.test_case import LLMTestCase, ToolCall
+from deepeval.metrics import ToolCorrectnessMetric
 
 # Import local modules
 from evaluations.config import (
@@ -20,6 +21,7 @@ from evaluations.config import (
     RESULTS_DIR,
     EVALUATION_SETTINGS,
     METRIC_WEIGHTS,
+    get_evaluation_model,
 )
 from evaluations.dataset_generator import EvaluationDataset, TestCase
 from evaluations.agent_wrapper import create_evaluation_agent
@@ -27,8 +29,7 @@ from evaluations.trace_extractor import (
     ExecutionTrace,
     trace_to_deepeval_context,
 )
-from evaluations.metrics.task_completion import create_task_completion_metric
-from evaluations.metrics.tool_correctness import create_tool_correctness_metric
+from evaluations.metrics.task_completion import AzureOpenAIModel, create_task_completion_metric
 from evaluations.metrics.step_efficiency import create_step_efficiency_metric
 from evaluations.metrics.plan_adherence import create_plan_adherence_metric
 from evaluations.metrics.plan_quality import create_plan_quality_metric
@@ -217,13 +218,27 @@ class EvaluationRunner:
             user_id="evaluation_system"
         )
 
-        # Initialize metrics
+        # Initialize evaluation model for metrics
+        # We use AzureOpenAIModel wrapper to ensure all metrics use Azure OpenAI
+        azure_model = get_evaluation_model()
+        azure_deepeval_model = AzureOpenAIModel(azure_model)
+
+        # HYBRID APPROACH:
+        # - ToolCorrectnessMetric: Use DeepEval's official metric (works with LLMTestCase)
+        # - Other metrics: Use custom implementations (DeepEval's trace-based metrics
+        #   require @observe decorator + evals_iterator, which doesn't fit our evaluation pattern)
         self.metrics = {
             "task_completion": create_task_completion_metric(
                 threshold=EVALUATION_SETTINGS["task_completion_threshold"]
             ),
-            "tool_correctness": create_tool_correctness_metric(
-                threshold=EVALUATION_SETTINGS["tool_correctness_threshold"]
+            "tool_correctness": ToolCorrectnessMetric(
+                threshold=EVALUATION_SETTINGS["tool_correctness_threshold"],
+                model=azure_deepeval_model,  # Pass Azure model object
+                include_reason=True,
+                strict_mode=False,
+                should_consider_ordering=True,
+                should_exact_match=False,
+                verbose_mode=False
             ),
             "step_efficiency": create_step_efficiency_metric(
                 threshold=EVALUATION_SETTINGS["step_efficiency_threshold"]
@@ -298,26 +313,25 @@ class EvaluationRunner:
         return summary
 
     def _evaluate_test_case(self, test_case: TestCase) -> TestResult:
-        """Evaluate a single test case."""
+        """Evaluate a single test case with hybrid metrics (DeepEval + Custom)."""
         # Run agent
         agent_result, trace = self.agent_wrapper.invoke_with_trace(test_case.query)
 
-        # Create DeepEval test case
-        # Note: Store tool information in retrieval_context as JSON strings for metric access
+        # Create DeepEval test case with retrieval_context for custom metrics
         retrieval_context = trace_to_deepeval_context(trace)
 
-        # Add tool information as JSON-encoded strings
-        retrieval_context.append(json.dumps({
-            "__tool_metadata__": True,
-            "expected_tools": test_case.expected_tools,
-            "actual_tools": trace.get_tool_names()
-        }))
+        # Convert tools to ToolCall objects for DeepEval's ToolCorrectnessMetric
+        tools_called = [ToolCall(name=tool_name) for tool_name in trace.get_tool_names()]
+        expected_tools = [ToolCall(name=tool_name) for tool_name in test_case.expected_tools]
 
+        # Create test case with both retrieval_context and tool information
         deepeval_test_case = LLMTestCase(
             input=test_case.query,
             actual_output=trace.final_answer,
             expected_output=test_case.expected_output,
             retrieval_context=retrieval_context,
+            tools_called=tools_called,
+            expected_tools=expected_tools,
         )
 
         # Run metrics
@@ -327,18 +341,42 @@ class EvaluationRunner:
 
         for metric_name, metric in self.metrics.items():
             try:
-                score = metric.measure(deepeval_test_case)
-                scores[metric_name] = score
+                if self.verbose:
+                    print(f"  Evaluating {metric_name}...", end=" ")
+
+                # Call measure() to evaluate
+                metric.measure(deepeval_test_case)
+
+                # Get score from metric.score attribute (DeepEval pattern)
+                # Some metrics return score from measure(), others store it in metric.score
+                score = getattr(metric, "score", None)
+
+                # Ensure score is a valid float (not None)
+                if score is None:
+                    if self.verbose:
+                        print(f"returned None, using 0.0")
+                    score = 0.0
+                else:
+                    if self.verbose:
+                        print(f"✅ {score:.2f}")
+
+                scores[metric_name] = float(score)
                 reasons[metric_name] = getattr(metric, "reason", "")
                 passed[metric_name] = metric.is_successful()
+
             except Exception as e:
+                # If metric fails, log error and assign 0.0 score
                 scores[metric_name] = 0.0
-                reasons[metric_name] = f"Metric failed: {str(e)}"
+                reasons[metric_name] = f"Metric evaluation failed: {str(e)}"
                 passed[metric_name] = False
 
+                if self.verbose:
+                    print(f"❌ {str(e)[:100]}")
+
         # Calculate overall score (weighted average)
+        # Ensure all scores are valid floats before multiplication
         overall_score = sum(
-            scores[metric] * METRIC_WEIGHTS[metric]
+            float(scores.get(metric, 0.0)) * float(METRIC_WEIGHTS.get(metric, 0.0))
             for metric in scores.keys()
         )
 

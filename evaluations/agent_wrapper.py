@@ -2,7 +2,7 @@
 Agent Wrapper for Evaluation
 
 This module wraps the LangGraph ReAct agent to capture detailed execution traces
-for evaluation purposes.
+for evaluation purposes. Supports both custom trace extraction and DeepEval's @observe decorator.
 """
 
 import time
@@ -12,6 +12,7 @@ from typing import Optional, Dict, Any, List
 
 from langchain_core.messages import HumanMessage
 from langfuse.langchain import CallbackHandler
+from deepeval.tracing import observe
 
 # Import from main agent module
 import sys
@@ -135,6 +136,56 @@ class EvaluationAgentWrapper:
             self.langfuse_handler.client.flush()
 
         return result, trace
+
+    @observe()
+    def invoke_for_deepeval(self, query: str) -> str:
+        """
+        Invoke the agent with DeepEval's @observe decorator for trace-based metrics.
+
+        This method is designed to work with DeepEval's evals_iterator and trace-based metrics
+        (TaskCompletion, StepEfficiency, PlanAdherence, PlanQuality).
+
+        Args:
+            query: User query to process
+
+        Returns:
+            str: Agent's final answer
+        """
+        # Generate thread_id for this invocation
+        thread_id = str(uuid.uuid4())
+
+        # Prepare input
+        input_message = {"messages": [HumanMessage(content=query)]}
+
+        # Prepare config
+        config = {
+            "configurable": {"thread_id": thread_id},
+        }
+
+        # Add Langfuse callback if enabled
+        if self.langfuse_handler:
+            config["callbacks"] = [self.langfuse_handler]
+
+        try:
+            result = self.agent.invoke(input_message, config=config)
+
+            # Extract final answer from messages
+            messages = result.get("messages", [])
+            if messages:
+                last_message = messages[-1]
+                final_answer = last_message.content if hasattr(last_message, "content") else str(last_message)
+            else:
+                final_answer = "No response generated"
+
+            # Flush Langfuse if enabled
+            if self.langfuse_handler and hasattr(self.langfuse_handler, "client"):
+                self.langfuse_handler.client.flush()
+
+            return final_answer
+
+        except Exception as e:
+            error_msg = f"Error during execution: {str(e)}"
+            return error_msg
 
     def invoke_batch(
         self,
