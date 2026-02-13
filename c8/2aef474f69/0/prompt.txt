@@ -1,0 +1,33 @@
+Updated the readme with the latest codebase changes
+
+---
+
+Whether the old changes to use the custom metrics is removed in README?
+
+---
+
+Whether the golden test cases are created and then it is evaluated against each metrics?
+
+---
+
+Integrate the langchain-docs MCP - https://docs.langchain.com/mcp into claude code for this repo
+
+---
+
+[Request interrupted by user for tool use]
+
+---
+
+I want to integrate it via http not with stdio
+
+---
+
+Yes, test it
+
+---
+
+I've restared the session, test it now
+
+---
+
+[Request interrupted by user for tool use]

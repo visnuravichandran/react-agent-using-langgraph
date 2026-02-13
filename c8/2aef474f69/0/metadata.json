@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.4.3",
+  "checkpoint_id": "c82aef474f69",
+  "session_id": "31ddc78a-388d-454a-942a-d6a83efa29c0",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-13T08:20:48.20358Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".claude/settings.json",
+    ".mcp.json"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "98feb968-a385-4ac1-9f16-8f10c20437b8",
+  "token_usage": {
+    "input_tokens": 11145,
+    "cache_creation_tokens": 141136,
+    "cache_read_tokens": 1909746,
+    "output_tokens": 10135,
+    "api_call_count": 40
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-13T08:20:48.065409Z",
+    "agent_lines": 1,
+    "human_added": 1295,
+    "human_modified": 7,
+    "human_removed": 0,
+    "total_committed": 1303,
+    "agent_percentage": 0.07674597083653108
+  },
+  "transcript_path": ".claude/projects/-Users-visnuravichandran-Workspace-ai-agents-simple-react-agent-using-langgraph/31ddc78a-388d-454a-942a-d6a83efa29c0.jsonl"
+}
