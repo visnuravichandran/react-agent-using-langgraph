@@ -1,7 +1,9 @@
 """
 Main Evaluation Runner
 
-Orchestrates the evaluation of the LangGraph ReAct agent using DeepEval's official metrics.
+Orchestrates the evaluation of the LangGraph ReAct agent using DeepEval's official metrics only.
+All 5 evaluation metrics (Task Completion, Tool Correctness, Step Efficiency, Plan Adherence,
+and Plan Quality) are provided by DeepEval 3.7.7+.
 """
 
 import json
@@ -13,7 +15,13 @@ from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 
 from deepeval.test_case import LLMTestCase, ToolCall
-from deepeval.metrics import ToolCorrectnessMetric
+from deepeval.metrics import (
+    TaskCompletionMetric,
+    ToolCorrectnessMetric,
+    StepEfficiencyMetric,
+    PlanAdherenceMetric,
+    PlanQualityMetric,
+)
 
 # Import local modules
 from evaluations.config import (
@@ -29,10 +37,7 @@ from evaluations.trace_extractor import (
     ExecutionTrace,
     trace_to_deepeval_context,
 )
-from evaluations.metrics.task_completion import AzureOpenAIModel, create_task_completion_metric
-from evaluations.metrics.step_efficiency import create_step_efficiency_metric
-from evaluations.metrics.plan_adherence import create_plan_adherence_metric
-from evaluations.metrics.plan_quality import create_plan_quality_metric
+from evaluations.model_wrapper import AzureOpenAIModel
 
 
 # ============================================================================
@@ -223,31 +228,44 @@ class EvaluationRunner:
         azure_model = get_evaluation_model()
         azure_deepeval_model = AzureOpenAIModel(azure_model)
 
-        # HYBRID APPROACH:
-        # - ToolCorrectnessMetric: Use DeepEval's official metric (works with LLMTestCase)
-        # - Other metrics: Use custom implementations (DeepEval's trace-based metrics
-        #   require @observe decorator + evals_iterator, which doesn't fit our evaluation pattern)
+        # Use DeepEval's official metrics for all evaluations
         self.metrics = {
-            "task_completion": create_task_completion_metric(
-                threshold=EVALUATION_SETTINGS["task_completion_threshold"]
+            "task_completion": TaskCompletionMetric(
+                threshold=EVALUATION_SETTINGS["task_completion_threshold"],
+                model=azure_deepeval_model,
+                include_reason=True,
+                strict_mode=False,
+                verbose_mode=False
             ),
             "tool_correctness": ToolCorrectnessMetric(
                 threshold=EVALUATION_SETTINGS["tool_correctness_threshold"],
-                model=azure_deepeval_model,  # Pass Azure model object
+                model=azure_deepeval_model,
                 include_reason=True,
                 strict_mode=False,
                 should_consider_ordering=True,
                 should_exact_match=False,
                 verbose_mode=False
             ),
-            "step_efficiency": create_step_efficiency_metric(
-                threshold=EVALUATION_SETTINGS["step_efficiency_threshold"]
+            "step_efficiency": StepEfficiencyMetric(
+                threshold=EVALUATION_SETTINGS["step_efficiency_threshold"],
+                model=azure_deepeval_model,
+                include_reason=True,
+                strict_mode=False,
+                verbose_mode=False
             ),
-            "plan_adherence": create_plan_adherence_metric(
-                threshold=EVALUATION_SETTINGS["plan_adherence_threshold"]
+            "plan_adherence": PlanAdherenceMetric(
+                threshold=EVALUATION_SETTINGS["plan_adherence_threshold"],
+                model=azure_deepeval_model,
+                include_reason=True,
+                strict_mode=False,
+                verbose_mode=False
             ),
-            "plan_quality": create_plan_quality_metric(
-                threshold=EVALUATION_SETTINGS["plan_quality_threshold"]
+            "plan_quality": PlanQualityMetric(
+                threshold=EVALUATION_SETTINGS["plan_quality_threshold"],
+                model=azure_deepeval_model,
+                include_reason=True,
+                strict_mode=False,
+                verbose_mode=False
             ),
         }
 
@@ -313,11 +331,11 @@ class EvaluationRunner:
         return summary
 
     def _evaluate_test_case(self, test_case: TestCase) -> TestResult:
-        """Evaluate a single test case with hybrid metrics (DeepEval + Custom)."""
+        """Evaluate a single test case with DeepEval's official metrics."""
         # Run agent
         agent_result, trace = self.agent_wrapper.invoke_with_trace(test_case.query)
 
-        # Create DeepEval test case with retrieval_context for custom metrics
+        # Create DeepEval test case with retrieval_context for trace-based metrics
         retrieval_context = trace_to_deepeval_context(trace)
 
         # Convert tools to ToolCall objects for DeepEval's ToolCorrectnessMetric

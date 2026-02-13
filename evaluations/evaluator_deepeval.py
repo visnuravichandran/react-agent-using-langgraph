@@ -36,7 +36,7 @@ from evaluations.config import (
 from evaluations.dataset_generator import EvaluationDataset
 from evaluations.agent_wrapper import create_evaluation_agent
 from evaluations.trace_extractor import extract_execution_trace
-from evaluations.metrics.task_completion import AzureOpenAIModel
+from evaluations.model_wrapper import AzureOpenAIModel
 
 
 # ============================================================================

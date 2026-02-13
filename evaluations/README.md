@@ -15,33 +15,23 @@ Comprehensive evaluation system for the LangGraph ReAct agent using DeepEval 3.7
 
 ## Overview
 
-This evaluation system measures agent performance across 5 key metrics using a **hybrid approach**:
+This evaluation system measures agent performance across 5 key metrics using **DeepEval's official metrics**:
 
-1. **Task Completion** - Did the agent complete the user's task? (Custom)
-2. **Tool Correctness** - Did the agent select the right tools? (**DeepEval Official**)
-3. **Step Efficiency** - Was the execution path optimal? (Custom)
-4. **Plan Adherence** - Did the agent follow the documented strategy? (Custom)
-5. **Plan Quality** - Was the reasoning clear and logical? (Custom)
+1. **Task Completion** - Did the agent complete the user's task?
+2. **Tool Correctness** - Did the agent select the right tools?
+3. **Step Efficiency** - Was the execution path optimal?
+4. **Plan Adherence** - Did the agent follow the documented strategy?
+5. **Plan Quality** - Was the reasoning clear and logical?
 
 ### Key Features
 
 - ✅ **46 test cases** across 5 categories (KB queries, web search, combined, conversational, edge cases)
-- ✅ **Hybrid metrics**: DeepEval's ToolCorrectnessMetric + Custom trace-based metrics
+- ✅ **DeepEval 3.7.7+ official metrics** for all evaluations
 - ✅ **Langfuse integration** for centralized results tracking
 - ✅ **Azure OpenAI GPT-4** as evaluation judge
 - ✅ **CSV/JSON export** for analysis
 - ✅ **CLI interface** for easy execution
 - ✅ **Pytest tests** for validation
-
-### Why Hybrid Approach?
-
-DeepEval 3.7.7's trace-based metrics (TaskCompletion, StepEfficiency, PlanAdherence, PlanQuality) require:
-- The `@observe` decorator on agent functions
-- Using `evals_iterator` with datasets
-
-Our evaluation architecture uses a different pattern (custom trace extraction), so we use:
-- ✅ **ToolCorrectnessMetric** from DeepEval (works with standalone LLMTestCase)
-- ✅ **Custom implementations** for trace-based metrics (optimized for our architecture)
 
 ## Quick Start
 
@@ -98,20 +88,11 @@ If Langfuse is enabled, view results at: https://cloud.langfuse.com
 
 ## Metrics
 
-This system uses a **hybrid approach** combining DeepEval's official metrics with custom implementations:
+This system uses **DeepEval's official metrics** (version 3.7.7+) for all evaluations:
 
-**DeepEval Official:**
-- [ToolCorrectnessMetric](https://deepeval.com/docs/metrics-tool-correctness) ✅ Works with standalone LLMTestCase
+All metrics are configured to use Azure OpenAI GPT-4 as the evaluation judge through a custom wrapper (`AzureOpenAIModel`).
 
-**Custom Implementations (optimized for our architecture):**
-- TaskCompletionMetric (LLM-as-judge)
-- StepEfficiencyMetric (G-Eval)
-- PlanAdherenceMetric (G-Eval)
-- PlanQualityMetric (G-Eval)
-
-**Note:** DeepEval's trace-based metrics require `@observe` decorator + `evals_iterator`, which doesn't fit our evaluation pattern. For full DeepEval integration, see `evaluator_deepeval.py`.
-
-### 1. TaskCompletionMetric (Custom)
+### 1. TaskCompletionMetric (DeepEval Official)
 
 **What it measures:** Whether the agent successfully completed the user's task using LLM-as-a-judge.
 
@@ -125,7 +106,7 @@ This system uses a **hybrid approach** combining DeepEval's official metrics wit
 
 **Threshold:** 0.7 (configurable in `config.py`)
 
-**Implementation:** `evaluations/metrics/task_completion.py`
+**Implementation:** `deepeval.metrics.TaskCompletionMetric`
 
 ### 2. ToolCorrectnessMetric (DeepEval Official)
 
@@ -163,9 +144,9 @@ This system uses a **hybrid approach** combining DeepEval's official metrics wit
 
 **Threshold:** 0.6 (configurable in `config.py`)
 
-**Implementation:** `evaluations/metrics/step_efficiency.py`
+**Implementation:** `deepeval.metrics.StepEfficiencyMetric`
 
-### 4. PlanAdherenceMetric (Custom - G-Eval)
+### 4. PlanAdherenceMetric (DeepEval Official)
 
 **What it measures:** Adherence to documented tool routing strategy.
 
@@ -184,9 +165,9 @@ This system uses a **hybrid approach** combining DeepEval's official metrics wit
 
 **Threshold:** 0.7 (configurable in `config.py`)
 
-**Implementation:** `evaluations/metrics/plan_adherence.py`
+**Implementation:** `deepeval.metrics.PlanAdherenceMetric`
 
-### 5. PlanQualityMetric (Custom - G-Eval)
+### 5. PlanQualityMetric (DeepEval Official)
 
 **What it measures:** Quality of agent's reasoning and planning.
 
@@ -206,24 +187,14 @@ This system uses a **hybrid approach** combining DeepEval's official metrics wit
 
 **Threshold:** 0.6 (configurable in `config.py`)
 
-**Implementation:** `evaluations/metrics/plan_quality.py`
-
-### Important Note: Hybrid Approach
-
-**This evaluation system uses a hybrid approach:**
-
-✅ **ToolCorrectnessMetric** - DeepEval 3.7.7's official implementation (works with standalone LLMTestCase)
-
-✅ **TaskCompletion, StepEfficiency, PlanAdherence, PlanQuality** - Custom implementations optimized for our evaluation architecture
-
-**Why?** DeepEval's trace-based metrics require `@observe` decorator + `evals_iterator`, which doesn't fit our pattern of custom trace extraction. Our custom metrics provide equivalent functionality while working seamlessly with our evaluation flow.
+**Implementation:** `deepeval.metrics.PlanQualityMetric`
 
 ## Architecture
 
 ```
 Test Dataset → Evaluator → Agent Wrapper → LangGraph Agent
                     ↓                           ↓
-         DeepEval Official Metrics ← Execution Trace + Tool Calls
+           DeepEval Metrics ← Execution Trace + Tool Calls
                     ↓
           DeepEval Results → Langfuse Reporter → Langfuse
 ```
