@@ -70,6 +70,7 @@ EVALUATION_SETTINGS = {
     # Scoring thresholds for assertions
     "task_completion_threshold": 0.7,
     "tool_correctness_threshold": 0.8,
+    "argument_correctness_threshold": 0.7,  # New: threshold for tool argument validation
     "step_efficiency_threshold": 0.6,
     "plan_adherence_threshold": 0.7,
     "plan_quality_threshold": 0.6,
@@ -134,11 +135,12 @@ GEVAL_SCALE = (1, 10)
 
 # Metric weights for aggregate scoring (sum to 1.0)
 METRIC_WEIGHTS = {
-    "task_completion": 0.25,
-    "tool_correctness": 0.25,
-    "step_efficiency": 0.20,
+    "task_completion": 0.20,
+    "tool_correctness": 0.20,
+    "argument_correctness": 0.20,  # New: weight for tool argument validation
+    "step_efficiency": 0.15,
     "plan_adherence": 0.15,
-    "plan_quality": 0.15,
+    "plan_quality": 0.10,
 }
 
 

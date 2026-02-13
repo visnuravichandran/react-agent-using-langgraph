@@ -1,0 +1,69 @@
+{
+  "test_cases": [
+    {
+      "id": "kb_arg_001",
+      "category": "knowledge_base_only",
+      "query": "What are the strategic shifts happening in the footwear and apparel industry?",
+      "expected_output": "Strategic shifts in the footwear and apparel industry include digital transformation, direct-to-consumer models, sustainability initiatives, and supply chain optimization.",
+      "expected_tools": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base"
+      ],
+      "expected_tool_arguments": [
+        {
+          "query": "footwear apparel industry strategic shifts"
+        }
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Industry analysis question with specific search query pattern expected."
+    },
+    {
+      "id": "web_arg_001",
+      "category": "web_search_only",
+      "query": "What are the latest news about artificial intelligence today?",
+      "expected_output": "Recent developments in AI include advancements in large language models, new regulations, and industry applications.",
+      "expected_tools": [
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_web"
+      ],
+      "expected_tool_arguments": [
+        {
+          "query": "artificial intelligence news today latest"
+        }
+      ],
+      "expected_num_steps": 2,
+      "difficulty": "easy",
+      "reasoning": "Current events question requiring web search with specific query terms."
+    },
+    {
+      "id": "combined_arg_001",
+      "category": "combined_tools",
+      "query": "Compare our internal AI strategy with the latest industry trends",
+      "expected_output": "Comparison of internal AI strategy with current industry trends shows alignment in key areas.",
+      "expected_tools": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_order": [
+        "search_knowledge_base",
+        "search_web"
+      ],
+      "expected_tool_arguments": [
+        {
+          "query": "AI strategy internal"
+        },
+        {
+          "query": "AI industry trends latest"
+        }
+      ],
+      "expected_num_steps": 3,
+      "difficulty": "medium",
+      "reasoning": "Requires both internal knowledge and external web search with distinct query arguments."
+    }
+  ]
+}

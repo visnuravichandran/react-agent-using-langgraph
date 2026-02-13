@@ -120,6 +120,11 @@ Examples:
         type=float,
         help=f"Tool correctness threshold (default: {EVALUATION_SETTINGS['tool_correctness_threshold']})"
     )
+    parser.add_argument(
+        "--threshold-argument-correctness",
+        type=float,
+        help=f"Argument correctness threshold (default: {EVALUATION_SETTINGS['argument_correctness_threshold']})"
+    )
 
     args = parser.parse_args()
 
@@ -188,6 +193,8 @@ Examples:
         EVALUATION_SETTINGS["task_completion_threshold"] = args.threshold_task_completion
     if args.threshold_tool_correctness is not None:
         EVALUATION_SETTINGS["tool_correctness_threshold"] = args.threshold_tool_correctness
+    if args.threshold_argument_correctness is not None:
+        EVALUATION_SETTINGS["argument_correctness_threshold"] = args.threshold_argument_correctness
 
     # Create evaluation runner
     runner = EvaluationRunner(

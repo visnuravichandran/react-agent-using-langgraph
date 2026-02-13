@@ -24,6 +24,10 @@ class TestCase(BaseModel):
     expected_output: str = Field(..., description="Expected response content (can be partial match)")
     expected_tools: List[str] = Field(..., description="List of expected tools to be called")
     expected_tool_order: List[str] = Field(..., description="Expected order of tool calls")
+    expected_tool_arguments: Optional[List[Dict[str, Any]]] = Field(
+        None,
+        description="List of expected arguments for each tool call (in order). Each dict contains expected input parameters."
+    )
     expected_num_steps: int = Field(..., ge=1, description="Expected number of reasoning steps")
     difficulty: str = Field(..., description="Difficulty level: easy, medium, hard")
     reasoning: Optional[str] = Field(None, description="Explanation of why this test case is designed this way")

@@ -18,6 +18,7 @@ from deepeval.test_case import LLMTestCase, ToolCall
 from deepeval.metrics import (
     TaskCompletionMetric,
     ToolCorrectnessMetric,
+    ArgumentCorrectnessMetric,
     StepEfficiencyMetric,
     PlanAdherenceMetric,
     PlanQualityMetric,
@@ -59,6 +60,7 @@ class TestResult:
     # Metric scores
     task_completion_score: float = 0.0
     tool_correctness_score: float = 0.0
+    argument_correctness_score: float = 0.0
     step_efficiency_score: float = 0.0
     plan_adherence_score: float = 0.0
     plan_quality_score: float = 0.0
@@ -66,6 +68,7 @@ class TestResult:
     # Metric reasons
     task_completion_reason: str = ""
     tool_correctness_reason: str = ""
+    argument_correctness_reason: str = ""
     step_efficiency_reason: str = ""
     plan_adherence_reason: str = ""
     plan_quality_reason: str = ""
@@ -73,6 +76,7 @@ class TestResult:
     # Metric success flags
     task_completion_passed: bool = False
     tool_correctness_passed: bool = False
+    argument_correctness_passed: bool = False
     step_efficiency_passed: bool = False
     plan_adherence_passed: bool = False
     plan_quality_passed: bool = False
@@ -99,6 +103,7 @@ class TestResult:
             "scores": {
                 "task_completion": self.task_completion_score,
                 "tool_correctness": self.tool_correctness_score,
+                "argument_correctness": self.argument_correctness_score,
                 "step_efficiency": self.step_efficiency_score,
                 "plan_adherence": self.plan_adherence_score,
                 "plan_quality": self.plan_quality_score,
@@ -107,6 +112,7 @@ class TestResult:
             "passed": {
                 "task_completion": self.task_completion_passed,
                 "tool_correctness": self.tool_correctness_passed,
+                "argument_correctness": self.argument_correctness_passed,
                 "step_efficiency": self.step_efficiency_passed,
                 "plan_adherence": self.plan_adherence_passed,
                 "plan_quality": self.plan_quality_passed,
@@ -132,6 +138,7 @@ class EvaluationRunSummary:
     # Aggregate scores
     mean_task_completion: float = 0.0
     mean_tool_correctness: float = 0.0
+    mean_argument_correctness: float = 0.0
     mean_step_efficiency: float = 0.0
     mean_plan_adherence: float = 0.0
     mean_plan_quality: float = 0.0
@@ -140,6 +147,7 @@ class EvaluationRunSummary:
     # Pass rates
     task_completion_pass_rate: float = 0.0
     tool_correctness_pass_rate: float = 0.0
+    argument_correctness_pass_rate: float = 0.0
     step_efficiency_pass_rate: float = 0.0
     plan_adherence_pass_rate: float = 0.0
     plan_quality_pass_rate: float = 0.0
@@ -163,6 +171,7 @@ class EvaluationRunSummary:
             "mean_scores": {
                 "task_completion": self.mean_task_completion,
                 "tool_correctness": self.mean_tool_correctness,
+                "argument_correctness": self.mean_argument_correctness,
                 "step_efficiency": self.mean_step_efficiency,
                 "plan_adherence": self.mean_plan_adherence,
                 "plan_quality": self.mean_plan_quality,
@@ -171,6 +180,7 @@ class EvaluationRunSummary:
             "pass_rates": {
                 "task_completion": self.task_completion_pass_rate,
                 "tool_correctness": self.tool_correctness_pass_rate,
+                "argument_correctness": self.argument_correctness_pass_rate,
                 "step_efficiency": self.step_efficiency_pass_rate,
                 "plan_adherence": self.plan_adherence_pass_rate,
                 "plan_quality": self.plan_quality_pass_rate,
@@ -244,6 +254,13 @@ class EvaluationRunner:
                 strict_mode=False,
                 should_consider_ordering=True,
                 should_exact_match=False,
+                verbose_mode=False
+            ),
+            "argument_correctness": ArgumentCorrectnessMetric(
+                threshold=EVALUATION_SETTINGS["argument_correctness_threshold"],
+                model=azure_deepeval_model,
+                include_reason=True,
+                strict_mode=False,
                 verbose_mode=False
             ),
             "step_efficiency": StepEfficiencyMetric(
@@ -338,9 +355,20 @@ class EvaluationRunner:
         # Create DeepEval test case with retrieval_context for trace-based metrics
         retrieval_context = trace_to_deepeval_context(trace)
 
-        # Convert tools to ToolCall objects for DeepEval's ToolCorrectnessMetric
-        tools_called = [ToolCall(name=tool_name) for tool_name in trace.get_tool_names()]
-        expected_tools = [ToolCall(name=tool_name) for tool_name in test_case.expected_tools]
+        # Convert tools to ToolCall objects for DeepEval's ToolCorrectnessMetric and ArgumentCorrectnessMetric
+        # Include input_parameters from the trace for argument validation
+        tools_called = [
+            ToolCall(name=tc.name, input_parameters=tc.input)
+            for tc in trace.tool_calls
+        ]
+
+        # Build expected tools with arguments if provided
+        expected_tools = []
+        for i, tool_name in enumerate(test_case.expected_tools):
+            tool_args = {}
+            if test_case.expected_tool_arguments and i < len(test_case.expected_tool_arguments):
+                tool_args = test_case.expected_tool_arguments[i]
+            expected_tools.append(ToolCall(name=tool_name, input_parameters=tool_args))
 
         # Create test case with both retrieval_context and tool information
         deepeval_test_case = LLMTestCase(
@@ -410,18 +438,21 @@ class EvaluationRunner:
 
             task_completion_score=scores["task_completion"],
             tool_correctness_score=scores["tool_correctness"],
+            argument_correctness_score=scores["argument_correctness"],
             step_efficiency_score=scores["step_efficiency"],
             plan_adherence_score=scores["plan_adherence"],
             plan_quality_score=scores["plan_quality"],
 
             task_completion_reason=reasons["task_completion"],
             tool_correctness_reason=reasons["tool_correctness"],
+            argument_correctness_reason=reasons["argument_correctness"],
             step_efficiency_reason=reasons["step_efficiency"],
             plan_adherence_reason=reasons["plan_adherence"],
             plan_quality_reason=reasons["plan_quality"],
 
             task_completion_passed=passed["task_completion"],
             tool_correctness_passed=passed["tool_correctness"],
+            argument_correctness_passed=passed["argument_correctness"],
             step_efficiency_passed=passed["step_efficiency"],
             plan_adherence_passed=passed["plan_adherence"],
             plan_quality_passed=passed["plan_quality"],
@@ -460,6 +491,7 @@ class EvaluationRunner:
 
             mean_task_completion=sum(r.task_completion_score for r in valid_results) / n,
             mean_tool_correctness=sum(r.tool_correctness_score for r in valid_results) / n,
+            mean_argument_correctness=sum(r.argument_correctness_score for r in valid_results) / n,
             mean_step_efficiency=sum(r.step_efficiency_score for r in valid_results) / n,
             mean_plan_adherence=sum(r.plan_adherence_score for r in valid_results) / n,
             mean_plan_quality=sum(r.plan_quality_score for r in valid_results) / n,
@@ -467,6 +499,7 @@ class EvaluationRunner:
 
             task_completion_pass_rate=sum(r.task_completion_passed for r in valid_results) / n,
             tool_correctness_pass_rate=sum(r.tool_correctness_passed for r in valid_results) / n,
+            argument_correctness_pass_rate=sum(r.argument_correctness_passed for r in valid_results) / n,
             step_efficiency_pass_rate=sum(r.step_efficiency_passed for r in valid_results) / n,
             plan_adherence_pass_rate=sum(r.plan_adherence_passed for r in valid_results) / n,
             plan_quality_pass_rate=sum(r.plan_quality_passed for r in valid_results) / n,
@@ -487,6 +520,7 @@ class EvaluationRunner:
                 "count": cat_n,
                 "task_completion": sum(r.task_completion_score for r in cat_results) / cat_n,
                 "tool_correctness": sum(r.tool_correctness_score for r in cat_results) / cat_n,
+                "argument_correctness": sum(r.argument_correctness_score for r in cat_results) / cat_n,
                 "step_efficiency": sum(r.step_efficiency_score for r in cat_results) / cat_n,
                 "plan_adherence": sum(r.plan_adherence_score for r in cat_results) / cat_n,
                 "plan_quality": sum(r.plan_quality_score for r in cat_results) / cat_n,
@@ -504,6 +538,7 @@ class EvaluationRunner:
         print(f"  Overall: {result.overall_score:.2f} {'✅' if result.all_passed else '❌'}")
         print(f"    Task Completion: {result.task_completion_score:.2f} {'✅' if result.task_completion_passed else '❌'}")
         print(f"    Tool Correctness: {result.tool_correctness_score:.2f} {'✅' if result.tool_correctness_passed else '❌'}")
+        print(f"    Argument Correctness: {result.argument_correctness_score:.2f} {'✅' if result.argument_correctness_passed else '❌'}")
         print(f"    Step Efficiency: {result.step_efficiency_score:.2f} {'✅' if result.step_efficiency_passed else '❌'}")
         print(f"    Plan Adherence: {result.plan_adherence_score:.2f} {'✅' if result.plan_adherence_passed else '❌'}")
         print(f"    Plan Quality: {result.plan_quality_score:.2f} {'✅' if result.plan_quality_passed else '❌'}")
@@ -524,22 +559,24 @@ class EvaluationRunner:
         print("\n" + "-"*80)
         print("MEAN SCORES")
         print("-"*80)
-        print(f"Overall:          {summary.mean_overall:.3f}")
-        print(f"Task Completion:  {summary.mean_task_completion:.3f}")
-        print(f"Tool Correctness: {summary.mean_tool_correctness:.3f}")
-        print(f"Step Efficiency:  {summary.mean_step_efficiency:.3f}")
-        print(f"Plan Adherence:   {summary.mean_plan_adherence:.3f}")
-        print(f"Plan Quality:     {summary.mean_plan_quality:.3f}")
+        print(f"Overall:              {summary.mean_overall:.3f}")
+        print(f"Task Completion:      {summary.mean_task_completion:.3f}")
+        print(f"Tool Correctness:     {summary.mean_tool_correctness:.3f}")
+        print(f"Argument Correctness: {summary.mean_argument_correctness:.3f}")
+        print(f"Step Efficiency:      {summary.mean_step_efficiency:.3f}")
+        print(f"Plan Adherence:       {summary.mean_plan_adherence:.3f}")
+        print(f"Plan Quality:         {summary.mean_plan_quality:.3f}")
 
         print("\n" + "-"*80)
         print("PASS RATES")
         print("-"*80)
-        print(f"All Passed:       {summary.all_passed_rate*100:.1f}%")
-        print(f"Task Completion:  {summary.task_completion_pass_rate*100:.1f}%")
-        print(f"Tool Correctness: {summary.tool_correctness_pass_rate*100:.1f}%")
-        print(f"Step Efficiency:  {summary.step_efficiency_pass_rate*100:.1f}%")
-        print(f"Plan Adherence:   {summary.plan_adherence_pass_rate*100:.1f}%")
-        print(f"Plan Quality:     {summary.plan_quality_pass_rate*100:.1f}%")
+        print(f"All Passed:           {summary.all_passed_rate*100:.1f}%")
+        print(f"Task Completion:      {summary.task_completion_pass_rate*100:.1f}%")
+        print(f"Tool Correctness:     {summary.tool_correctness_pass_rate*100:.1f}%")
+        print(f"Argument Correctness: {summary.argument_correctness_pass_rate*100:.1f}%")
+        print(f"Step Efficiency:      {summary.step_efficiency_pass_rate*100:.1f}%")
+        print(f"Plan Adherence:       {summary.plan_adherence_pass_rate*100:.1f}%")
+        print(f"Plan Quality:         {summary.plan_quality_pass_rate*100:.1f}%")
 
         if summary.category_scores:
             print("\n" + "-"*80)
@@ -550,6 +587,7 @@ class EvaluationRunner:
                 print(f"  Overall: {scores['overall']:.3f}")
                 print(f"  Task Completion: {scores['task_completion']:.3f}")
                 print(f"  Tool Correctness: {scores['tool_correctness']:.3f}")
+                print(f"  Argument Correctness: {scores['argument_correctness']:.3f}")
 
         print("\n" + "="*80)
 
@@ -595,7 +633,7 @@ class EvaluationRunner:
             # Header
             writer.writerow([
                 "test_id", "category", "query",
-                "task_completion", "tool_correctness", "step_efficiency",
+                "task_completion", "tool_correctness", "argument_correctness", "step_efficiency",
                 "plan_adherence", "plan_quality", "overall",
                 "all_passed", "expected_tools", "actual_tools",
                 "execution_time", "error"
@@ -609,6 +647,7 @@ class EvaluationRunner:
                     r.query[:100],
                     f"{r.task_completion_score:.3f}",
                     f"{r.tool_correctness_score:.3f}",
+                    f"{r.argument_correctness_score:.3f}",
                     f"{r.step_efficiency_score:.3f}",
                     f"{r.plan_adherence_score:.3f}",
                     f"{r.plan_quality_score:.3f}",

@@ -71,6 +71,7 @@ pytest tests/test_evaluations.py -v
 **Evaluation Metrics:**
 - **Task Completion**: Did the agent complete the task?
 - **Tool Correctness**: Were the right tools selected?
+- **Argument Correctness**: Were tool arguments correct and appropriate?
 - **Step Efficiency**: Was execution optimal?
 - **Plan Adherence**: Did agent follow the strategy?
 - **Plan Quality**: Was reasoning clear?
